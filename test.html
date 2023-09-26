@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>창작자를 위한 랜덤 생성기</title>
+</head>
+<body>
+    <h1>창작자를 위한 랜덤 생성기</h1>
+    <button onclick="generateKeywords()">새로운 키워드 생성</button>
+
+    <!-- 장르, 배경 키워드 -->
+    <h3>장르, 배경</h3>
+    <div id="genreBackgroundResult"></div>
+
+    <!-- 관계 키워드 -->
+    <h3>관계</h3>
+    <div id="relationshipResult"></div>
+
+    <!-- 공 키워드 -->
+    <h3>공</h3>
+    <div id="roleResult"></div>
+
+    <!-- 수 키워드 -->
+    <h3>수</h3>
+    <div id="numberResult"></div>
+
+    <!-- 사건 키워드 -->
+    <h3>사건</h3>
+    <div id="eventResult"></div>
+
+    <!-- 직업 키워드 -->
+    <h3>직업</h3>
+    <div id="professionResult"></div>
+
+    <h2>최근 3개의 결과</h2>
+    <ul id="recentResults"></ul>
+
+    <script>
+        // 각 키워드 묶음
+        const genres = ["로맨스", "로맨스 판타지", "판타지sf", "시대물", "미스터리스릴러", "캠퍼스물", "학원물", "드라마일상", "코믹물", "피폐물", "액션무협", "스포츠물", "현대배경", "동양배경", "서양배경", "이세계", "디스토피아"];
+        const relationships = ["삼각로맨스", "환생회귀", "빙의", "차원이동", "복수배신", "성장물", "친구>연인", "혐관", "사내연애", "인외존재", "금지된사랑", "결혼동거", "계약관계", "짝사랑", "첫사랑", "신분차이", "역하렘", "키잡물", "역키잡"];
+        const roles = ["연하공", "후회공", "집착공", "계략공", "다정공", "순정공", "능글공", "울보공", "대형견공", "순진공", "명랑공", "귀염공", "초딩공", "호구공", "헌신공", "강공", "냉혈공", "능욕공", "까칠공", "광공", "개아가공", "복흑계략공", "상처공", "허당공", "천재공", "존댓말공", "짝사랑공", "미인공"];
+        const numbers = ["미남수", "병약수", "미인수", "다정수", "무심수", "순진수", "명랑수", "까칠수", "능력수", "강수", "소심수", "잔망수", "허당수", "평범수", "호구수", "순정수", "짝사랑수", "호구수", "헌신수", "냉혈수", "외유내강수", "단정수", "우월수", "군림수", "연상수", "임신수", "도망수", "중년수", "상처수", "굴림수", "유혹수", "떡대수"];
+        const events = ["복수", "탈출", "사랑", "배신", "추격", "대결", "학원", "우주여행", "시간 여행", "미궁", "비밀", "탐험", "소원", "납치", "세계 종말", "왕국 정복", "인질", "해적 공격", "우정", "가문의 음모", "장군의 스토리", "궁궐 내에서", "휴가 여행", "스포츠 대회", "정체 불명의 살인", "정체 불명의 사라진 물건", "고전 추리", "재난", "자연의 힘", "정치 음모", "사이버 공격", "은행 강도", "슈퍼히어로 대전", "도시 침공", "영웅의 부활", "위험한 역경", "엽기적인 엔딩", "유령과의 조우", "허구적 세계", "시간의 역전", "간첩 스토리", "외계 토벌", "무법지대 탈출", "로맨틱 사건", "농장 이야기", "인공지능과의 대화", "신화 속의 모험", "비밀 서클", "고아의 이야기", "인간과 동물의 우정"];
+        const professions = ["농부", "목수", "석공", "양치기", "어부", "광부", "선원", "건설 노동자", "조선공", "택시 운전사", "소방관", "경찰관", "운반 업체 직원", "청소부", "환경 정비원", "건물 관리인", "원예가", "주차장 직원", "화물 운송 업체 직원", "제과제빵사", "정비공", "기술자", "축산 농부", "승강기 기사", "정비공", "레스토랑 서버", "화물 차량 운전사", "물류 작업자", "대리운전사", "가구 조립공", "창고 관리자", "물류 관리자", "군인", "변호사", "의사", "공학자", "회계사", "건축가", "소프트웨어 개발자", "마케팅 전문가", "투자 은행가", "감정평가사", "세무사", "컨설턴트", "보험 조사관", "판매 대리점 관리자", "프로젝트 관리자", "화학자", "미술 감정가", "뉴스 기자", "출판사 편집자", "교육자", "화학 엔지니어", "논문 편집자", "법원 서기관", "심리학자", "컴퓨터 보안 전문가", "의료 연구원", "사회 연구원", "기사", "화가", "상인", "성직자", "작업장 주인", "대장장이", "기사단장", "수녀", "상점 주인", "바텐더", "사냥꾼", "횃불 지기", "마법사", "탐험가", "성당 건축가", "의사", "연금술사", "기념비 조각가", "성 궁정의 시녀", "성 기사", "시조", "호랑이 조련사", "사서", "드래곤 기수", "마법사", "요술사", "엘프 궁수", "도둑님", "용병", "해적", "무림 수인", "비행선 선장", "포식자", "흑마법사", "고블린 기계공", "언데드 묘지 집사", "강령술사", "야수 조련사", "정령 마녀", "우주 탐험가", "신전 기사", "신전 예언자", "암살자", "식물 학자", "영웅", "바다 여정가", "어둠의 사제", "미스티컬 의사"];
+
+        // 최근 결과를 저장할 배열
+        const recentResults = [];
+
+        // 키워드 결과를 특정 div에 표시하는 함수
+        function displayResult(divId, keywords) {
+            document.getElementById(divId).textContent = keywords.join(', ');
+        }
+
+        // 최근 결과를 업데이트하는 함수
+        function updateRecentResults() {
+            const recentResultsList = document.getElementById('recentResults');
+            recentResultsList.innerHTML = '';
+            for (let i = 0; i < Math.min(recentResults.length, 3); i++) {
+                const listItem = document.createElement('li');
+                listItem.textContent = recentResults[i];
+                recentResultsList.appendChild(listItem);
+            }
+        }
+
+        // 무작위 키워드 생성 함수
+        function generateKeywords() {
+            // 각 키워드 묶음에서 무작위로 2개씩 선택
+            const selectedGenres = shuffleArray(genres).slice(0, 2);
+            const selectedRelationships = shuffleArray(relationships).slice(0, 2);
+            const selectedRoles = shuffleArray(roles).slice(0, 2);
+            const selectedNumbers = shuffleArray(numbers).slice(0, 2);
+            const selectedEvents = shuffleArray(events).slice(0, 2);
+            const selectedProfessions = shuffleArray(professions).slice(0, 2);
+
+            // 선택된 키워드를 결과에 표시
+            displayResult('genreBackgroundResult', selectedGenres);
+            displayResult('relationshipResult', selectedRelationships);
+            displayResult('roleResult', selectedRoles);
+            displayResult('numberResult', selectedNumbers);
+            displayResult('eventResult', selectedEvents);
+            displayResult('professionResult', selectedProfessions);
+
+            // 최근 결과 업데이트
+            const resultText = [...selectedGenres, ...selectedRelationships, ...selectedRoles, ...selectedNumbers, ...selectedEvents, ...selectedProfessions].join(', ');
+            recentResults.unshift(resultText);
+            updateRecentResults();
+        }
+
+        // 배열을 무작위로 섞는 함수
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // 초기 키워드 생성
+        generateKeywords();
+    </script>
+</body>
+</html>
